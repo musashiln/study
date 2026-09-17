@@ -25,15 +25,25 @@ class Ui_Form(object):
         Form.resize(600, 448)
         self.verticalLayout = QVBoxLayout(Form)
         self.verticalLayout.setObjectName(u"verticalLayout")
+        self.nameLabel = QLabel(Form)
+        self.nameLabel.setObjectName(u"nameLabel")
+
+        self.verticalLayout.addWidget(self.nameLabel)
+
         self.nameInput = QLineEdit(Form)
         self.nameInput.setObjectName(u"nameInput")
 
         self.verticalLayout.addWidget(self.nameInput)
 
-        self.nameLabel = QLabel(Form)
-        self.nameLabel.setObjectName(u"nameLabel")
+        self.nameLabel_2 = QLabel(Form)
+        self.nameLabel_2.setObjectName(u"nameLabel_2")
 
-        self.verticalLayout.addWidget(self.nameLabel)
+        self.verticalLayout.addWidget(self.nameLabel_2)
+
+        self.ageInput = QLineEdit(Form)
+        self.ageInput.setObjectName(u"ageInput")
+
+        self.verticalLayout.addWidget(self.ageInput)
 
         self.submitButton = QPushButton(Form)
         self.submitButton.setObjectName(u"submitButton")
@@ -53,8 +63,9 @@ class Ui_Form(object):
 
     def retranslateUi(self, Form):
         Form.setWindowTitle(QCoreApplication.translate("Form", u"Form", None))
-        self.nameLabel.setText(QCoreApplication.translate("Form", u"TextLabel", None))
+        self.nameLabel.setText(QCoreApplication.translate("Form", u"\u59d3\u540d\uff1a", None))
+        self.nameLabel_2.setText(QCoreApplication.translate("Form", u"\u5e74\u9f84\uff1a", None))
         self.submitButton.setText(QCoreApplication.translate("Form", u"\u63d0\u4ea4", None))
-        self.resultLabel.setText(QCoreApplication.translate("Form", u"TextLabel", None))
+        self.resultLabel.setText("")
     # retranslateUi
 

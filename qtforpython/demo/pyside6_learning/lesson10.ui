@@ -15,14 +15,24 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
+    <widget class="QLabel" name="nameLabel">
+     <property name="text">
+      <string>姓名：</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QLineEdit" name="nameInput"/>
    </item>
    <item>
-    <widget class="QLabel" name="nameLabel">
+    <widget class="QLabel" name="nameLabel_2">
      <property name="text">
-      <string>TextLabel</string>
+      <string>年龄：</string>
      </property>
     </widget>
+   </item>
+   <item>
+    <widget class="QLineEdit" name="ageInput"/>
    </item>
    <item>
     <widget class="QPushButton" name="submitButton">
@@ -34,7 +44,7 @@
    <item>
     <widget class="QLabel" name="resultLabel">
      <property name="text">
-      <string>TextLabel</string>
+      <string/>
      </property>
     </widget>
    </item>
