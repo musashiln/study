@@ -42,6 +42,35 @@ class StudentModel(QAbstractTableModel):
         # 垂直表头显示 1、2、3……
         return str(section + 1)
 
+    def add_student(self, student):
+        # 新数据将要插入的位置
+        new_row = len(self.students)
+
+        # 通知视图：准备插入一行
+        self.beginInsertRows(QModelIndex(), new_row, new_row)
+
+        # 修改真正的 Python 数据
+        self.students.append(student)
+
+        # 通知视图：插入完成
+        self.endInsertRows()
+
+    def remove_student(self, row):
+        # 检查行号是否有效
+        if row < 0 or row >= len(self.students):
+            return False
+
+        # 通知视图：准备删除一行
+        self.beginRemoveRows(QModelIndex(), row, row)
+
+        # 删除真正的数据
+        self.students.pop(row)
+
+        # 通知视图：删除完成
+        self.endRemoveRows()
+
+        return True
+
 
 students = [
     ["小明", "18", "北京", "计算机科学", "xiaoming@example.com"],
@@ -57,6 +86,12 @@ model = StudentModel(students)
 
 # 让表格使用这个数据模型
 table.setModel(model)
+
+# model.add_student(
+#     ["小华", 21, "杭州", "网络工程", "xiaohua@example.com"]
+# )
+
+# model.remove_student(0)
 
 def show_double_clicked(index):
     row = index.row()
