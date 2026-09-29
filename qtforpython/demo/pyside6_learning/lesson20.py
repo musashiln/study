@@ -45,7 +45,13 @@ class CircleProgress(QWidget):
         # 将进度圆弧改成绿色
         progress_pen = QPen(Qt.GlobalColor.green, 12)
         painter.setPen(progress_pen)
+        # 75 / 100 = 0.75
+        # 0.75 × 360 = 270 度
+        # 270 × 16 = 4320
         span_angle = int(-self.value * 360 / 100 * 16)
+        # x, y, size, size：绘制圆所在区域
+        # 90 × 16：从顶部开始
+        # span_angle：绘制多少角度
         painter.drawArc(x, y, size, size, 90 * 16, span_angle)
 
         # 绘制中心文字
