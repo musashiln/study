@@ -2,16 +2,17 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "C/C++ Runner: Debug Session",
+      "name": "C/C++: Debug active file",
       "type": "cppdbg",
       "request": "launch",
+      "program": "${workspaceFolder}\\.build\\${fileBasenameNoExtension}.exe",
       "args": [],
       "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
       "externalConsole": true,
-      "cwd": "d:/Code/study/c/02-注释关键字标识符/src",
-      "program": "d:/Code/study/c/02-注释关键字标识符/src/build/Debug/outDebug",
       "MIMode": "gdb",
-      "miDebuggerPath": "gdb",
+      "miDebuggerPath": "D:/Develop/tools/Compiler/c/mingw64/bin/gdb.exe",
+      "preLaunchTask": "C/C++: gcc.exe build active file",
       "setupCommands": [
         {
           "description": "Enable pretty-printing for gdb",

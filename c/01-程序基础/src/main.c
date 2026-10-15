@@ -1,2 +1,11 @@
 #include <stdio.h>
-int main(void){ printf("Hello, C!\n"); return 0; }
+
+int call(){
+    return 0;
+}
+
+int main(void){ 
+    call();
+    printf("Hello, C!\n"); 
+    return 0; 
+}
