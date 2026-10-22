@@ -7,6 +7,8 @@
       "command": "D:/Develop/tools/Compiler/c/mingw64/bin/gcc.exe",
       "args": [
         "-std=c17",
+        "-finput-charset=UTF-8",
+        "-fexec-charset=GBK",
         "-Wall",
         "-Wextra",
         "-g",

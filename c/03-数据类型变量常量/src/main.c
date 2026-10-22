@@ -13,12 +13,12 @@ int main(void){
 
     printf("size=%zu\n",sizeof(char)); 
     
-    short s = 10;
-    int i = 20;
-    long l = 30L;
-    float f = 1.5f;
-    double d = 3.14;
-    char c = 'A';
+    short s;
+    int i;
+    long l;
+    float f;
+    double d;
+    char c;
 
     printf("%hd\n", s);
     printf("%d\n", i); 
