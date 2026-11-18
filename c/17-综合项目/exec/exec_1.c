@@ -1,5 +1,18 @@
 #include <stdio.h>
 
+
+void reverse_array(int nums[], size_t n)
+{
+    if (n == 0) {
+        return ;
+    }
+    for(size_t i = 0; i < n / 2; i++) {
+        int temp = nums[i];
+        nums[i] = nums[n - 1 - i];
+        nums[n - 1 - i] = temp;
+    }
+}
+
 size_t replace_negative(int nums[], size_t n)
 {
     if (n == 0) {
@@ -39,6 +52,51 @@ int find_first(const int nums[], size_t n, int target, size_t *index)
         }
     }
     return 0;
+}
+
+int remove_first(int nums[], size_t *n, int target)
+{
+    if (n == NULL || *n == 0) {
+        return 0;
+    }
+    size_t index = 0;
+    if (find_first(nums, *n, target, &index)) {
+        for(size_t i = index; i < *n - 1; i++) {
+            nums[i] = nums[i + 1];
+        }
+        (*n)--;
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+int remove_at(int nums[], size_t *n, size_t index) {
+    if (n == NULL || *n == 0) {
+        return 0;
+    } 
+    if (index < 0 || index >= *n) {
+        return 0;
+    }
+    for (size_t i = index; i < *n - 1; i++) {
+        nums[index] = nums[index + 1];
+    }
+    (*n)--;
+    return 1;
+}
+
+int insert_at(int nums[], size_t *n, size_t capacity,
+              size_t index, int value)
+{
+    if (n == NULL || *n >= capacity || index > *n) {
+        return 0;
+    }
+    for (size_t i = *n; i > index; i--) {
+        nums[i] = nums[i - 1];
+    }
+    nums[index] = value;
+    (*n)++;
+    return 1;
 }
 
 int array_max(const int nums[], size_t n, int *result)
@@ -98,16 +156,62 @@ size_t count_positive(const int nums[], size_t n)
     return count;
 }
 
+size_t remove_all(int nums[], size_t *n, int target)
+{
+    if (n == 0) {
+        return 0;
+    }
+
+    size_t write = 0;
+    for(size_t read = 0; read < *n; read++) {
+        if (nums[read] != target) {
+            nums[write] = nums[read];
+            write++;
+        }
+    }
+    size_t temp = *n;
+    *n = write;
+    return temp - write;
+}
+
 int main(void) {
-    int nums[] = {3, -2, 0, -5, 8};
-    // int nums[] = {-3, -2, -7, -1, -5, -8};
-    size_t n = sizeof(nums) / sizeof(nums[0]);
+    int nums[6] = {3, 8, 8, -5, 8};
+    size_t n = 5;
+    size_t capacity = sizeof(nums) / sizeof(nums[0]);
+
+    int remove_at_flag = remove_at(nums, &n, 3);
+    if(!remove_at_flag) {
+        return 0;
+    } else {
+        for(size_t i = 0; i < n; i++) {
+            printf("%d ", nums[i]);
+        }
+    }
+
+    size_t delete_num = remove_all(nums, &n, 8);
+    printf("\n删除所有 8 后：");
+    for(size_t i = 0; i < n; i++) {
+        printf("%d ", nums[i]);
+    }
+    printf("\n有效长度：");
+    printf("%zu", n);
+    printf("\n返回值：");
+    printf("%zu\n", delete_num);
+
+    if (!insert_at(nums, &n, capacity, 0, 99)) {
+        printf("插入失败\n");
+    }   
+
+    for(size_t i = 0; i < n; i++) {
+        printf("%d ", nums[i]);
+    }
+
     
     int sum = array_sum(nums, n);
     
     int largest = 100;
     if (array_max(nums, n, &largest)) {
-        printf("最大值：%d\n", largest);
+        printf("\n最大值：%d\n", largest);
     } else {
         printf("没有元素，无法求最大值\n");
         return 0;
@@ -150,6 +254,17 @@ int main(void) {
         printf("%d ", nums[i]);
     }
     printf("\n修改次数：%zu\n", negative_count);
+
+    reverse_array(nums, n);
+    for(size_t i = 0; i < n; i++) {
+        printf("%d ", nums[i]);
+    }
+
+    printf("\n");
+    int removed = remove_first(nums, &n, 8);
+    for(size_t i = 0; i < n; i++) {
+        printf("%d ", nums[i]);
+    }
 
     return 0;
 }
