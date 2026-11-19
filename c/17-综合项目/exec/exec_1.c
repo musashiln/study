@@ -75,11 +75,11 @@ int remove_at(int nums[], size_t *n, size_t index) {
     if (n == NULL || *n == 0) {
         return 0;
     } 
-    if (index < 0 || index >= *n) {
+    if (index >= *n) {
         return 0;
     }
     for (size_t i = index; i < *n - 1; i++) {
-        nums[index] = nums[index + 1];
+        nums[i] = nums[i + 1];
     }
     (*n)--;
     return 1;
