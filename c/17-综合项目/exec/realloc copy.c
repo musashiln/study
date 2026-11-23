@@ -1,26 +1,32 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int push_back(int **nums, int *n, int *capacity, int value) {
-    if ((*n) == (*capacity)) {
-        int *temp = (int *)realloc(*nums, 2 * (*capacity) * sizeof(**nums));
+typedef struct {
+    int *data;
+    int n;
+    int capacity;
+} IntArray;
+
+int push_back(IntArray *arr, int value) {
+
+    if ((arr->n) == (arr->capacity)) {
+        int *temp = (int *)realloc(arr->data, 2 * (arr->capacity) * sizeof(*(arr->data)));
         if (temp == NULL) {
             printf("扩容失败\n");
             return 0;
         }
-        *nums = temp;
-        *capacity = 2 * (*capacity);
+        arr->data = temp;
+        arr->capacity = 2 * (arr->capacity);
     }
-    (*nums)[*n] = value;
-    (*n)++;
+    (arr->data)[arr->n] = value;
+    (arr->n)++;
     return 1;
 }
 
 int main(void) {
-    int capacity = 2;
-    int n = 0;
-    int *nums = (int *)malloc(capacity * sizeof(int));
-    if (nums == NULL) {
+    IntArray arr = {NULL, 0, 2};
+    arr.data = (int *)malloc((arr.capacity) * sizeof(int));
+    if (arr.data == NULL) {
         printf("内存分配失败\n");
         return 1;
     }
@@ -29,17 +35,17 @@ int main(void) {
     int count = (int)(sizeof(values) / sizeof(values[0]));
 
     for (int i = 0; i < count; i++) {
-        int is_push_back = push_back(&nums, &n, &capacity, values[i]);
+        int is_push_back = push_back(&arr, values[i]);
         if (!is_push_back) {
-            free(nums);
+            free(arr.data);
             return 1;
         }
-        printf("(n, capacity) = (%d, %d)\n", n, capacity);
+        printf("(n, capacity) = (%d, %d)\n", arr.n, arr.capacity);
     }
 
-    for (int i = 0; i < n; i++) {
-        printf("%d ", nums[i]);
+    for (int i = 0; i < arr.n; i++) {
+        printf("%d ", arr.data[i]);
     }
-    free(nums);
+    free(arr.data);
     return 0;
 }
