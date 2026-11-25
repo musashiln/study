@@ -1,0 +1,4 @@
+[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
+chcp
+[Console]::OutputEncoding.CodePage
+.\contacts.exe
