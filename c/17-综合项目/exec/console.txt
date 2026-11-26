@@ -2,3 +2,9 @@
 chcp
 [Console]::OutputEncoding.CodePage
 .\contacts.exe
+
+gcc -std=c17 -Wall -Wextra -Wpedantic -Werror exec_3.c contact.c -o contacts.exe
+
+gcc -c exec_3.c
+gcc -c contact.c
+gcc exec_3.o contact.o -o contacts.exe

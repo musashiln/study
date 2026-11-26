@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#254f49">
+  <title>火烈鸟骑鳄鱼 · 日落巡游</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body { background: #254f49; }
+    .lagoon {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: 100%;
+      height: 100vh;
+      height: 100svh;
+      overflow: hidden;
+      isolation: isolate;
+    }
+    .scene {
+      display: block;
+      flex: none;
+      width: min(116vw, 190vh);
+      width: min(116vw, 190svh);
+      max-width: none;
+      height: auto;
+      overflow: visible;
+      grid-area: 1 / 1;
+      justify-self: center;
+    }
+    .motion-control {
+      position: absolute;
+      right: max(20px, env(safe-area-inset-right));
+      bottom: max(20px, env(safe-area-inset-bottom));
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border: 1px solid #ffedc17a;
+      border-radius: 50%;
+      background: #163f3ee6;
+      color: #fff1cc;
+      cursor: pointer;
+    }
+    .motion-control[hidden] { display: none; }
+    .motion-control:hover { background: #255951; }
+    .motion-control:focus-visible { outline: 3px solid #fff2c7; outline-offset: 4px; }
+    .motion-control svg { width: 21px; height: 21px; fill: currentColor; }
+    .play-icon, .paused .pause-icon { display: none; }
+    .paused .play-icon { display: block; }
+
+    .swimmers { animation: cruise 11s ease-in-out infinite; }
+    .float { transform-origin: 602px 470px; animation: float 3.6s ease-in-out infinite; }
+    .tail { transform-origin: 439px 467px; animation: sweep 3.6s ease-in-out infinite; }
+    .near-paddle { transform-origin: 697px 475px; animation: stroke 3.6s ease-in-out infinite; }
+    .hind-paddle { transform-origin: 436px 477px; animation: stroke 3.6s -1.8s ease-in-out infinite; }
+    .rider { transform-origin: 552px 420px; animation: ride 3.6s ease-in-out infinite; }
+    .neck { transform-origin: 590px 370px; animation: nod 3.6s ease-in-out infinite; }
+    .wing { transform-origin: 579px 372px; animation: feathers 3.6s ease-in-out infinite; }
+    .scarf { transform-origin: 628px 322px; animation: flutter 1.8s ease-in-out infinite; }
+    .eyelid { transform-origin: 653px 205px; animation: blink 6.7s linear infinite; }
+    .water-strokes { animation: current 8s ease-in-out infinite alternate; }
+    .water-strokes.far { animation-duration: 13s; animation-direction: alternate-reverse; }
+    .wake { animation: wake 3.6s ease-out infinite; }
+    .wake.behind { animation-delay: -1.8s; }
+    .glints { animation: glimmer 4.6s ease-in-out infinite alternate; }
+    .lotus { transform-origin: 0 0; animation: lotus 4.8s ease-in-out infinite; }
+    .reeds { transform-origin: 0 0; animation: breeze 6.3s ease-in-out infinite alternate; }
+    .paused .scene * { animation-play-state: paused; }
+    @media (prefers-reduced-motion: reduce) {
+      .lagoon:not(.playing) .scene * { animation-play-state: paused; }
+    }
+    @keyframes cruise { 0%, 100% { transform: translateX(-12px); } 50% { transform: translateX(13px); } }
+    @keyframes float { 0%, 100% { transform: translateY(1px) rotate(.5deg); } 50% { transform: translateY(-4px) rotate(-.65deg); } }
+    @keyframes sweep { 0%, 100% { transform: rotate(-3deg) scaleY(.94); } 50% { transform: rotate(3deg) scaleY(1.06); } }
+    @keyframes stroke { 0%, 100% { transform: rotate(-10deg); } 38% { transform: rotate(12deg); } 74% { transform: rotate(-13deg); } }
+    @keyframes ride { 0%, 100% { transform: rotate(-.6deg); } 50% { transform: rotate(1.6deg); } }
+    @keyframes nod { 0%, 100% { transform: rotate(1.7deg); } 48% { transform: rotate(-1.2deg); } }
+    @keyframes feathers { 0%, 100% { transform: rotate(1deg); } 55% { transform: rotate(-2.5deg); } }
+    @keyframes flutter { 0%, 100% { transform: skewY(-4deg) scaleX(.98); } 50% { transform: skewY(4deg) scaleX(1.04); } }
+    @keyframes blink { 0%, 44%, 47%, 100% { transform: scaleY(1); } 45.5% { transform: scaleY(.08); } }
+    @keyframes current { to { transform: translateX(-23px); } }
+    @keyframes wake { from { opacity: 0; transform: translate(9px, -2px); } 24% { opacity: .85; } to { opacity: 0; transform: translate(-34px, 4px); } }
+    @keyframes glimmer { from { opacity: .34; } to { opacity: .77; } }
+    @keyframes lotus { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-3px) rotate(1deg); } }
+    @keyframes breeze { from { transform: skewX(-2deg); } to { transform: skewX(2.5deg); } }
+  </style>
+</head>
+<body>
+  <main class="lagoon" aria-label="日落巡游">
+    <svg class="scene" viewBox="0 0 1200 740" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="scene-title scene-description">
+      <title id="scene-title">火烈鸟骑鳄鱼</title>
+      <desc id="scene-description">夕阳下，一只系着青色丝巾的粉红火烈鸟侧坐在鳄鱼背上。鳄鱼摆着长尾，划过睡莲之间的碧绿色水面。</desc>
+      <defs>
+        <linearGradient id="sky" x2="0" y2="1" gradientUnits="objectBoundingBox">
+          <stop stop-color="#e99e85"/><stop offset=".44" stop-color="#ffc488"/><stop offset="1" stop-color="#ffe5a0"/>
+        </linearGradient>
+        <linearGradient id="river" x1="0" x2="0" y1="411" y2="750" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#8cb99c"/><stop offset=".22" stop-color="#6aa995"/><stop offset=".63" stop-color="#478f85"/><stop offset="1" stop-color="#306e6a"/>
+        </linearGradient>
+        <linearGradient id="hide" x2=".18" y2="1">
+          <stop stop-color="#bccb73"/><stop offset=".36" stop-color="#9fba69"/><stop offset=".68" stop-color="#6f9c60"/><stop offset="1" stop-color="#446f55"/>
+        </linearGradient>
+        <linearGradient id="plumage" x2=".55" y2="1">
+          <stop stop-color="#ffd6b9"/><stop offset=".45" stop-color="#ff9a87"/><stop offset="1" stop-color="#e15e6e"/>
+        </linearGradient>
+        <linearGradient id="feather-pink" x2=".4" y2="1">
+          <stop stop-color="#ffb099"/><stop offset=".56" stop-color="#ff817b"/><stop offset="1" stop-color="#db586a"/>
+        </linearGradient>
+        <linearGradient id="sun-path" x2="0" y2="1">
+          <stop stop-color="#ffdb91" stop-opacity=".8"/><stop offset="1" stop-color="#fbd18c" stop-opacity=".08"/>
+        </linearGradient>
+        <pattern id="print-grain" width="153" height="151" patternUnits="userSpaceOnUse">
+          <rect width="153" height="151" filter="url(#grain)" opacity=".22"/>
+        </pattern>
+        <filter id="grain" x="0" y="0" width="100%" height="100%">
+          <feTurbulence type="fractalNoise" baseFrequency=".78" numOctaves="2" stitchTiles="stitch"/>
+          <feColorMatrix type="saturate" values="0"/>
+        </filter>
+        <!-- Reusable silhouettes for the near and far banks. -->
+        <path id="frond" d="M0 0 Q34 -40 94 -13 Q70 -17 59 -13 L67 -10 Q54 -12 44 -9 L52 -6 Q37 -7 30 -4 L36 -2 Q18 -3 0 0Z"/>
+        <g id="palm" fill="currentColor">
+          <path d="M-7 3 C-4 -34 8 -80 7 -125 L12 -126 C17 -88 8 -39 4 3Z"/>
+          <g transform="translate(10 -123)">
+            <use href="#frond" transform="rotate(-13)"/><use href="#frond" transform="rotate(14) scale(.94 1)"/>
+            <use href="#frond" transform="rotate(43) scale(.85 1)"/><use href="#frond" transform="rotate(77) scale(.58 .8)"/>
+            <use href="#frond" transform="scale(-1 1) rotate(-5)"/><use href="#frond" transform="scale(-1 1) rotate(29)"/>
+            <use href="#frond" transform="scale(-1 1) rotate(61) scale(.74 1)"/><use href="#frond" transform="rotate(-45) scale(.64 .8)"/>
+          </g>
+        </g>
+        <g id="grass" fill="currentColor">
+          <path d="M0 0 Q-15 -42 -41 -67 Q-17 -58 -4 -30 Q-20 -87 -13 -105 Q-4 -64 1 -37 Q7 -84 24 -100 Q12 -62 6 -27 Q29 -67 45 -73 Q24 -46 12 -20 Q34 -44 50 -43 Q28 -26 16 0Z"/>
+          <path d="M-13 0 Q-31 -29 -52 -39 Q-31 -38 -18 -25 Q-35 -53 -34 -65 Q-19 -47 -8 -24Z"/>
+        </g>
+        <g id="canopy-leaf">
+          <path fill="currentColor" d="M0 0 C9 -27 34 -55 79 -60 C67 -34 45 -6 0 0Z"/>
+          <path fill="none" stroke="#8fb684" stroke-opacity=".34" stroke-width="1.6" d="M4 -2 Q37 -23 70 -53"/>
+        </g>
+        <g id="canopy" fill="none" stroke-linecap="round">
+          <path stroke="currentColor" stroke-width="7" d="M-24 -12 Q68 36 172 70 Q211 84 239 114"/>
+          <use href="#canopy-leaf" transform="translate(22 12) rotate(89) scale(1.2)"/>
+          <use href="#canopy-leaf" transform="translate(45 23) rotate(14) scale(.94)"/>
+          <use href="#canopy-leaf" transform="translate(65 32) rotate(84) scale(1.14)"/>
+          <use href="#canopy-leaf" transform="translate(94 45) rotate(12) scale(1.05)"/>
+          <use href="#canopy-leaf" transform="translate(116 51) rotate(85) scale(1.04)"/>
+          <use href="#canopy-leaf" transform="translate(146 62) rotate(23) scale(.94)"/>
+          <use href="#canopy-leaf" transform="translate(173 72) rotate(89) scale(.83)"/>
+          <use href="#canopy-leaf" transform="translate(196 84) rotate(31) scale(.75)"/>
+          <use href="#canopy-leaf" transform="translate(217 97) rotate(71) scale(.7)"/>
+        </g>
+        <g id="water-lily">
+          <path fill="#286760" d="M-45 3 C-40 -6 -8 -10 22 -6 C47 -2 47 5 25 10 C2 16 -43 14 -45 3Z"/>
+          <path fill="#83a879" d="M-46 0 C-39 -8 -8 -12 22 -8 C45 -5 47 1 25 6 Q6 11 -16 8 L-4 1 L-24 7 Q-42 6 -46 0Z"/>
+          <path fill="#dbe3a3" d="M-39 -2 Q-19 -9 5 -8 Q-22 -5 -39 -2Z"/>
+          <g transform="translate(7 -6)">
+            <path fill="#d97883" d="M-1 3 Q-20 0 -23 -13 Q-12 -13 -5 -8 Q-12 -21 -7 -27 Q0 -24 4 -15 Q10 -23 16 -23 Q19 -12 13 -6 Q20 -12 27 -11 Q22 3 7 4Z"/>
+            <path fill="#ffad9d" d="M2 2 Q-12 -10 -7 -26 Q2 -21 7 -5 Q6 -18 16 -23 Q19 -9 9 2Z"/>
+            <path fill="#ffd4b2" d="M-1 3 Q-16 3 -24 -11 Q-10 -9 -1 -1 Q-9 -12 -6 -17 Q2 -12 6 -1 Q11 -11 23 -12 Q20 0 8 4Z"/>
+            <path fill="#ffe3a2" d="M-5 2 Q1 -4 9 1 L14 1 Q7 6 -5 2Z"/>
+          </g>
+        </g>
+      </defs>
+
+      <!-- Sunset, broken cloud bands and distant hills. -->
+      <rect x="-2200" y="-1900" width="5600" height="2360" fill="#e99e85"/>
+      <rect x="-2200" y="0" width="5600" height="447" fill="url(#sky)"/>
+      <circle cx="852" cy="211" r="86" fill="#ffe2a0" opacity=".26"/>
+      <circle cx="852" cy="211" r="74" fill="#fff0b2"/>
+      <g fill="#fff0ba" opacity=".54">
+        <path d="M102 169 Q128 161 171 164 Q193 155 230 160 Q261 146 292 154 Q305 158 330 159 L371 162 Q340 166 299 165 L211 171Z"/>
+        <path d="M360 115 Q394 110 418 112 Q443 102 478 107 Q494 110 521 109 L557 112 Q488 118 427 116Z"/>
+        <path d="M766 240 Q802 236 834 237 Q857 230 888 234 Q911 227 943 234 L999 239 Q921 244 865 242Z"/>
+      </g>
+      <g stroke="#8b7771" fill="none" stroke-width="2.6" stroke-linecap="round">
+        <path d="M353 223 q9 -3 15 5 q3 -8 13 -10 M386 210 q5 -2 9 3 q2 -5 7 -6"/>
+        <path d="M927 158 q6 -3 12 3 q3 -7 9 -8"/>
+      </g>
+      <path fill="#dba58b" d="M-400 349 Q-44 299 88 327 Q164 324 243 276 Q267 260 284 267 Q312 275 342 302 Q412 347 488 327 Q538 312 577 320 Q643 336 722 305 Q773 280 804 289 Q863 314 917 306 Q976 291 1005 265 Q1029 247 1052 253 Q1142 301 1281 295 L1570 320 V438 H-400Z"/>
+      <path fill="#bd9987" d="M-410 325 Q-86 304 40 327 T229 345 Q291 337 346 304 Q368 292 390 302 Q465 354 539 344 Q603 323 663 341 Q728 360 793 327 Q850 300 884 315 Q968 351 1052 303 Q1122 264 1205 289 L1570 325 V438 H-410Z"/>
+      <path fill="#879783" d="M-500 365 Q-64 313 67 340 Q125 351 180 343 Q232 331 290 355 Q349 375 394 361 Q456 341 522 366 Q593 390 677 360 Q740 337 796 354 Q871 374 937 347 Q992 320 1057 339 Q1124 353 1216 314 L1560 315 V441 H-500Z"/>
+      <g color="#738e7b">
+        <use href="#palm" transform="translate(220 394) scale(.43)"/><use href="#palm" transform="translate(252 393) scale(-.30 .30)"/>
+        <use href="#palm" transform="translate(935 389) scale(-.35 .35)"/><use href="#palm" transform="translate(969 393) scale(.44)"/>
+      </g>
+      <path fill="#658a77" d="M-450 375 Q-61 331 48 359 Q81 345 118 364 Q149 356 184 371 Q241 359 288 379 Q318 369 355 386 Q428 383 481 397 Q559 404 632 393 Q705 378 765 386 Q823 368 870 377 Q920 351 966 368 Q1006 347 1046 357 Q1098 326 1150 348 Q1241 330 1530 344 V435 H-450Z"/>
+      <g color="#4e7667">
+        <use href="#palm" transform="translate(105 401) rotate(-9) scale(.86)"/><use href="#palm" transform="translate(163 405) rotate(12) scale(-.57 .57)"/>
+        <use href="#palm" transform="translate(1102 403) rotate(9) scale(-.83 .83)"/>
+      </g>
+      <path fill="#446e60" d="M-600 374 Q-79 351 19 371 Q81 352 146 383 Q186 369 238 391 Q270 385 307 401 Q378 401 431 411 Q525 416 590 412 Q653 402 703 408 Q772 394 822 399 Q889 379 930 389 Q969 370 1018 380 Q1081 351 1134 366 Q1205 343 1530 355 V429 H-600Z"/>
+      <path fill="#a7ba8f" d="M-350 413 Q48 404 273 415 T674 417 Q793 410 904 412 T1520 400 V430 H-350Z"/>
+
+      <!-- Water and fragmented reflections. -->
+      <rect x="-2200" y="421" width="5600" height="2200" fill="url(#river)"/>
+      <path fill="url(#sun-path)" d="M827 422 H879 L899 426 L872 429 L917 432 L890 436 L928 439 L905 444 L950 449 L929 452 L960 458 L924 461 L971 468 L937 472 L988 478 L955 483 L1011 492 L968 498 L1028 508 L988 513 L1053 525 L990 532 L1068 544 L1020 552 L1090 568 L1008 577 L1103 595 L998 607 L1134 630 L1042 642 L1150 664 L1049 673 L1175 702 L1048 715 L1208 749 H604 L688 722 L622 706 L723 680 L657 666 L747 645 L679 632 L758 611 L705 596 L777 576 L725 564 L788 550 L749 538 L801 528 L762 519 L810 507 L777 500 L819 489 L784 483 L829 474 L801 467 L835 460 L812 455 L840 449 L821 444 L844 439 L825 435 L849 430 L831 427 L851 424Z"/>
+      <g fill="none" stroke-linecap="round">
+        <g class="water-strokes far" stroke="#c5d7a6" stroke-width="2.4" opacity=".72">
+          <path d="M-44 435 h162 m16 0 h19 M192 428 h92 M360 441 h96 m14 0 h35 M615 432 h102 M996 431 h70 m15 0 h100 M29 460 h91 m34 0 h35 M260 449 h64 M978 461 h48 m27 0 h121"/>
+        </g>
+        <g class="water-strokes" stroke="#b4d6b4" stroke-width="3.2" opacity=".64">
+          <path d="M4 515 q62 -4 113 -1 m24 0 h26 M190 480 h54 M198 566 q46 -3 75 0 m18 0 h29 M443 548 q32 -3 66 -1 M993 510 q51 -3 88 -1 m16 0 h30 M814 588 q48 -4 77 -1 M1050 622 q58 -4 126 0 M322 650 q51 -5 91 -1 m16 0 h32 M568 706 q41 -4 71 -1"/>
+        </g>
+        <g class="glints" stroke="#ffe9ac" stroke-width="3">
+          <path d="M837 428 h40 M872 438 h28 M832 454 h49 M922 473 h21 M914 500 h43 M872 542 q27 -2 51 0 M952 567 h38 M752 613 h26 M901 640 q42 -3 67 0 M1004 691 h45"/>
+        </g>
+      </g>
+
+      <!-- The wake follows the animals while the background current slips past. -->
+      <g class="swimmers">
+        <path fill="#386e65" opacity=".53" d="M242 502 Q330 493 391 495 Q490 487 623 492 Q787 488 910 491 Q958 494 919 500 Q843 508 747 506 Q635 519 502 516 Q361 521 295 514 Q369 510 399 508 Q297 510 242 502Z"/>
+        <g fill="none" stroke-linecap="round" stroke="#d0e1b6" stroke-width="3.5">
+          <path class="wake behind" d="M340 483 q-32 -6 -64 0 m-13 0 q-16 0 -23 3 M404 498 q-52 -3 -87 4"/>
+          <path class="wake" d="M464 512 q-47 -3 -82 3 m-17 1 -14 1 M759 508 q-25 4 -60 2"/>
+        </g>
+        <g class="float" stroke-linecap="round" stroke-linejoin="round">
+          <!-- The tail swings around its broad base. -->
+          <g class="tail">
+            <path fill="#688859" d="M451 440 Q407 444 376 446 Q320 445 284 422 Q250 402 225 368 Q231 402 263 435 Q313 492 428 497 L460 474Z"/>
+            <path fill="url(#hide)" d="M459 446 Q411 447 375 450 Q322 451 281 425 Q248 404 225 368 Q250 439 321 472 Q371 496 432 493 L465 477Z"/>
+            <path fill="#b7c57b" d="M226 371 Q263 431 321 449 Q366 462 411 457 Q354 474 300 447 Q250 420 226 371Z"/>
+            <g fill="#517b56"><path d="M273 424 l16 7 6 18 -10 -10Z M302 441 l18 6 5 17 -12 -10Z M338 451 l20 3 5 17 -14 -12Z M376 454 l18 -1 7 16 -15 -9Z"/></g>
+          </g>
+          <!-- Far feet, dorsal scutes and the continuous body and snout. -->
+          <path fill="#476e57" d="M732 463 Q760 462 778 484 L798 489 Q804 493 796 495 L769 493 Q744 486 727 478Z"/>
+          <path fill="#527351" d="M383 451 l16 -17 13 8 17 -20 13 10 17 -19 15 11 16 -18 15 12 17 -16 17 13 17 -14 17 12 17 -11 16 10 16 -9 16 10 15 -8 14 11 15 -6 14 11 -24 28Z"/>
+          <path fill="#c5c67c" d="M404 438 l8 4 17 -20 -3 13 14 -2 19 -20 -4 14 17 -2 18 -19 -4 14 17 -1 19 -17 -4 13 19 0 19 -14 -5 12 22 0 -29 17Z"/>
+          <path fill="url(#hide)" d="M372 455 C424 423 481 417 549 419 C602 420 664 437 703 430 Q731 425 744 409 Q752 396 764 398 Q766 385 778 385 Q790 384 795 396 Q806 399 815 407 Q847 412 886 407 L909 403 Q914 396 921 398 L928 401 Q940 397 947 404 Q952 410 948 417 Q939 432 919 437 Q890 445 842 448 Q812 450 792 465 C756 501 680 509 580 511 C484 512 408 502 369 483 Q350 472 372 455Z"/>
+          <path fill="#cbcc83" d="M376 479 Q422 497 478 497 Q533 504 601 499 Q705 498 762 475 Q732 498 675 505 Q588 519 491 507 Q417 502 376 479Z"/>
+          <path fill="#dbd194" d="M764 450 Q787 425 818 427 Q845 430 868 425 Q905 423 947 410 Q944 428 919 437 Q887 448 844 448 Q813 450 792 465 Q779 474 760 480 Q779 462 776 453Z"/>
+          <path fill="#588451" d="M743 415 Q757 392 772 400 Q790 390 804 404 Q793 398 785 402 Q770 406 760 407Z"/>
+          <path fill="#9faf68" d="M747 416 Q758 408 768 408 Q758 414 752 423Z"/>
+          <g fill="#608950" opacity=".85">
+            <path d="M405 446 q10 -13 26 -14 q-9 5 -13 14Z M431 440 q8 -11 24 -12 q-9 4 -11 11Z M462 434 q8 -9 23 -9 q-7 4 -10 10Z M492 431 q8 -9 21 -8 q-6 3 -9 9Z M650 438 q8 -6 18 0 l-10 4Z M674 440 q8 -6 15 -2 l-7 5Z"/>
+            <path d="M454 463 q6 -6 13 -1 q-6 6 -13 1Z M472 471 q5 -5 11 -1 q-4 5 -11 1Z M489 458 q6 -5 13 0 q-7 5 -13 0Z M626 461 q8 -7 15 -1 q-6 7 -15 1Z M648 469 q6 -6 13 -1 q-5 6 -13 1Z M661 453 q5 -5 10 -1 q-4 5 -10 1Z M709 447 q6 -4 12 0 q-7 4 -12 0Z M724 439 q4 -4 8 0 q-5 4 -8 0Z"/>
+          </g>
+          <path fill="#fff0c0" d="M768 398 q2 -10 10 -10 q9 0 12 10 q-12 3 -22 0Z"/>
+          <ellipse cx="781" cy="394.5" rx="2.6" ry="4.5" fill="#294b43"/>
+          <path d="M767 398 q10 3 23 0" fill="none" stroke="#4c7151" stroke-width="2"/>
+          <ellipse cx="921" cy="403" rx="4.2" ry="2" fill="#486d4c" transform="rotate(-11 921 403)"/>
+          <g fill="#fff2ce" stroke="#7a8a61" stroke-width=".9">
+            <path d="M822 430 l7 11 4 -12 M846 429 l5 7 4 -8 M872 427 l7 11 4 -13 M901 422 l5 7 4 -9 M926 416 l4 6 3 -9"/>
+          </g>
+          <path d="M777 425 Q779 435 790 431 Q801 425 817 429 Q844 433 870 427 Q918 422 943 411" fill="none" stroke="#3c624d" stroke-width="3.4"/>
+          <path d="M797 443 q12 -7 23 -6 M891 437 l15 -3" fill="none" stroke="#b4ad77" stroke-width="2"/>
+          <!-- Near paddles overlap the belly. -->
+          <g class="hind-paddle">
+            <path fill="#6d965b" d="M445 466 Q432 459 420 473 L399 490 Q395 496 405 500 L421 502 L405 509 Q400 513 408 513 L421 511 Q414 518 423 517 L439 509 Q448 502 434 496 L427 492 Q448 488 451 479Z"/>
+            <path fill="none" stroke="#4e7854" stroke-width="2.5" d="M426 493 q13 6 14 10 M409 511 l13 -5 M422 514 l8 -7"/>
+          </g>
+          <g class="near-paddle">
+            <path fill="#77a060" d="M701 462 Q688 458 678 469 Q670 480 675 495 Q678 500 671 503 L651 510 Q643 514 652 516 L669 513 Q655 522 666 521 L680 515 Q675 521 682 519 Q703 510 700 498 L696 484 Q713 473 706 465Z"/>
+            <path fill="none" stroke="#527c55" stroke-width="2.5" d="M678 476 q-4 9 0 16 M652 514 l15 -5 M666 519 l10 -7 M681 517 l7 -7"/>
+          </g>
+          <!-- A small woven saddle makes the rider's seat legible. -->
+          <path fill="#975e50" d="M508 421 Q544 410 585 419 L604 429 Q587 442 574 461 Q545 462 513 447 Q522 436 508 421Z"/>
+          <path fill="#efbb79" d="M509 420 Q547 410 586 419 L599 426 Q583 436 572 455 Q543 453 516 443 Q523 433 509 420Z"/>
+          <path fill="none" stroke="#b86f54" stroke-width="3" d="M521 440 Q543 450 570 450 Q580 434 591 428"/>
+          <path fill="none" stroke="#f9d59a" stroke-width="2" d="M523 448 l-3 5 m11 -3 -2 5 m11 -3 -2 5 m11 -3 -1 5 m11 -3 -1 5"/>
+
+          <!-- Flamingo: bent far leg, breast, S-shaped neck, wing and near leg. -->
+          <g class="rider">
+            <path fill="none" stroke="#af5e61" stroke-width="7" d="M565 392 Q593 398 614 410 Q619 412 616 417 L604 436 l10 4"/>
+            <g class="neck">
+              <path fill="url(#plumage)" d="M563 373 Q579 353 607 351 Q629 346 623 326 C618 305 587 297 582 265 C577 234 592 203 618 191 Q636 183 654 187 Q669 189 674 201 Q677 212 669 219 Q659 227 646 220 Q636 214 626 222 C609 233 601 253 608 269 C616 289 647 300 651 328 C658 360 638 382 605 390Z"/>
+              <path fill="#ffcfb0" d="M587 267 Q580 228 610 202 Q629 185 650 190 Q626 192 609 211 Q587 238 592 261 Q596 281 614 296 Q592 283 587 267Z"/>
+              <path fill="#db6b75" d="M612 281 Q630 296 641 308 Q659 333 646 357 Q634 378 604 382 Q636 368 641 350 Q651 325 632 304Z"/>
+              <path fill="#ffd3b4" d="M649 197 Q666 192 677 202 L681 213 Q671 223 658 217 Q648 211 649 197Z"/>
+              <path fill="#f1b792" d="M670 199 Q689 197 704 211 Q712 221 706 232 Q700 245 686 252 Q683 241 680 230 Q678 222 668 216 Q662 211 665 206Z"/>
+              <path fill="#303d43" d="M698 206 Q710 212 709 224 Q706 242 686 252 Q685 240 680 229 Q691 227 698 219 Q703 213 698 206Z"/>
+              <path fill="none" stroke="#8b6868" stroke-width="1.7" d="M669 212 Q683 212 695 220"/>
+              <path fill="#ffe4bb" d="M669 201 Q686 198 696 208 Q682 203 668 207Z"/>
+              <g class="eyelid">
+                <circle cx="653" cy="205" r="6.1" fill="#ffeab6"/><circle cx="653" cy="205" r="3.6" fill="#3b3940"/><circle cx="654.2" cy="203.8" r="1.1" fill="#fff5d2"/>
+              </g>
+              <path fill="none" stroke="#d87878" stroke-width="1.7" d="M641 201 q3 -5 9 -6"/>
+              <g class="scarf">
+                <path fill="#317e78" d="M630 319 Q610 320 597 312 Q585 305 571 311 Q582 314 586 321 L577 323 Q595 331 615 325 L630 326Z"/>
+                <path fill="#54a79a" d="M631 321 Q615 326 606 332 Q596 340 581 337 L588 333 L581 329 Q598 333 608 325 Q618 318 631 321Z"/>
+              </g>
+              <path fill="#357e76" d="M620 313 Q633 316 645 310 L651 323 Q639 332 624 329Z"/>
+              <path fill="#8cc9ae" d="M621 315 Q635 319 646 313 L647 316 Q634 322 622 319Z"/>
+              <path fill="#286b68" d="M621 318 q8 -2 10 4 q1 7 -8 7 q-6 -4 -2 -11Z"/>
+            </g>
+            <path fill="#454751" d="M548 370 Q515 365 454 350 Q463 367 489 386 L467 380 Q488 404 523 408 L551 395Z"/>
+            <path fill="url(#plumage)" d="M466 348 Q487 350 505 351 Q529 340 554 342 Q577 345 591 354 Q603 360 616 350 Q628 371 611 392 Q591 419 556 420 Q522 421 500 399 Q484 379 466 348Z"/>
+            <path fill="none" stroke="#ce6671" stroke-width="8" d="M557 407 Q571 410 591 424 Q599 430 595 435 L573 466"/>
+            <path fill="none" stroke="#f59a87" stroke-width="4.4" d="M557 405 Q573 409 593 424 Q599 428 596 433 L573 465"/>
+            <circle cx="596" cy="431" r="4.3" fill="#e9807a"/>
+            <path fill="#e78a78" d="M573 462 Q577 466 574 469 L585 476 Q588 479 583 478 L568 473 L562 478 Q559 479 560 476 L566 468 L559 470 Q555 470 558 467Z"/>
+            <g class="wing">
+              <path fill="#c85768" d="M589 371 Q580 398 549 404 Q522 408 496 389 Q475 373 452 350 Q477 357 501 356 Q540 341 566 351Z"/>
+              <path fill="url(#feather-pink)" d="M588 364 Q576 390 550 397 Q529 401 512 388 Q487 380 465 358 Q487 366 498 364 Q480 355 470 342 Q495 353 513 351 Q546 336 571 348 Q582 352 588 364Z"/>
+              <path fill="#ffc2a7" d="M491 352 Q506 356 521 349 Q551 336 571 350 Q550 344 527 354 Q508 361 491 352Z"/>
+              <g fill="none" stroke="#df6e76" stroke-width="2.3">
+                <path d="M488 363 q21 14 43 12 M505 377 q23 13 45 7 M528 389 q18 6 33 -2"/>
+              </g>
+              <path fill="#ffd0af" d="M552 354 q7 -4 15 0 q-7 -1 -12 3Z M563 360 q5 -3 10 0 l-8 2Z"/>
+            </g>
+          </g>
+        </g>
+      </g>
+
+      <!-- Floating plants and close foliage frame the open water. -->
+      <g transform="translate(260 593) scale(.87)"><g class="lotus"><use href="#water-lily"/></g></g>
+      <g transform="translate(953 556) scale(.52)"><g class="lotus" style="animation-delay:-2s"><use href="#water-lily"/></g></g>
+      <g transform="translate(845 675) scale(1.17)"><g class="lotus" style="animation-delay:-1.3s"><use href="#water-lily"/></g></g>
+      <g fill="#52897a">
+        <path d="M190 605 q23 -10 53 -5 l-13 4 14 -1 q-15 10 -46 7 q-13 -1 -8 -5Z"/>
+        <path d="M873 657 q27 -10 65 -5 q14 4 -4 10 q-23 7 -51 2 l13 -5 -19 3Z"/>
+        <path d="M116 550 q19 -7 40 -3 l-8 3 9 -1 q-17 7 -36 5Z"/>
+      </g>
+      <g color="#386e61"><use href="#grass" transform="translate(42 511) scale(1.45 .95)"/><use href="#grass" transform="translate(1154 503) scale(-1.3 1.08)"/></g>
+      <path fill="#345f54" d="M-300 465 Q-34 451 23 472 Q57 469 81 486 Q117 490 148 505 Q98 505 74 509 Q34 514 -20 509 L-300 526Z M1084 503 Q1111 489 1145 488 Q1167 471 1220 464 L1510 452 V506 Q1263 494 1172 507 Q1118 513 1084 503Z"/>
+      <g color="#376559"><use href="#canopy" transform="translate(4 -26) rotate(-7) scale(1.04)"/><use href="#canopy" transform="translate(1207 -22) scale(-.93 .93) rotate(-12)"/></g>
+      <g color="#28544c"><use href="#canopy" transform="translate(-24 0) rotate(23) scale(.84)"/><use href="#canopy" transform="translate(1223 -17) scale(-1 1) rotate(15) scale(.9)"/></g>
+      <g color="#326a60"><use href="#grass" transform="translate(80 717) scale(1.25)"/><use href="#grass" transform="translate(1103 723) scale(-1.3 1.2)"/></g>
+      <path fill="#25554e" d="M-400 666 Q-56 629 48 655 Q86 662 109 685 Q177 683 245 721 Q289 731 320 754 L-400 773Z M877 766 Q934 718 987 713 Q1038 674 1088 675 Q1141 627 1217 631 L1520 597 V777Z"/>
+      <g transform="translate(132 731)" color="#285a51"><g class="reeds"><use href="#grass" transform="scale(1.25 1.31)"/></g></g>
+      <g transform="translate(1050 730)" color="#24574f"><g class="reeds" style="animation-delay:-2s"><use href="#grass" transform="scale(-1.32 1.45)"/></g></g>
+      <g transform="translate(42 733)" color="#4f8170"><use href="#canopy-leaf" transform="rotate(-58) scale(1.35 .7)"/><use href="#canopy-leaf" transform="rotate(-18) scale(1.14 .68)"/><use href="#canopy-leaf" transform="rotate(23) scale(.95 .72)"/></g>
+      <g transform="translate(1151 718) scale(-1 1)" color="#4b7968"><use href="#canopy-leaf" transform="rotate(-48) scale(1.3 .7)"/><use href="#canopy-leaf" transform="rotate(-12) scale(1 .75)"/><use href="#canopy-leaf" transform="rotate(25) scale(.77 .65)"/></g>
+      <rect x="-350" y="-150" width="1900" height="1030" fill="url(#print-grain)" opacity=".27" pointer-events="none"/>
+    </svg>
+    <button class="motion-control" hidden type="button" aria-label="暂停动画" title="暂停动画">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path class="pause-icon" d="M6 5h4v14H6zm8 0h4v14h-4z"/>
+        <path class="play-icon" d="M8 4.5v15l11-7.5z"/>
+      </svg>
+    </button>
+  </main>
+  <script>
+    const lagoon = document.querySelector('.lagoon');
+    const control = document.querySelector('.motion-control');
+    const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    function setPaused(paused) {
+      lagoon.classList.toggle('paused', paused);
+      lagoon.classList.toggle('playing', !paused);
+      const label = paused ? '播放动画' : '暂停动画';
+      control.setAttribute('aria-label', label);
+      control.title = label;
+    }
+
+    setPaused(motionPreference.matches);
+    control.hidden = false;
+    control.addEventListener('click', () => setPaused(!lagoon.classList.contains('paused')));
+    motionPreference.addEventListener('change', event => setPaused(event.matches));
+  </script>
+</body>
+</html>

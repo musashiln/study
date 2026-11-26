@@ -120,6 +120,12 @@ int main(void)
     int count = 0;
     int capacity = (int)(sizeof contacts / sizeof contacts[0]);
 
+    int is_loaded = load_contacts(contacts, capacity, &count, "contacts.txt");
+    if (!is_loaded) {
+        printf("恢复失败\n");
+        return 1;
+    }
+
     while (1) {
         puts("1. 新增");
         puts("2. 查找");
@@ -256,6 +262,13 @@ int main(void)
             }
 
         } else if (selected == 5) {
+            
+            int is_writed = save_contacts(contacts, count, "contacts.txt");
+            if (is_writed) {
+                printf("保存成功\n");
+            } else {
+                printf("保存失败\n");
+            }
             printf("退出程序\n");
             break;
         }      

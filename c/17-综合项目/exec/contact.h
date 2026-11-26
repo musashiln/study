@@ -8,4 +8,8 @@ typedef struct {
 
 int find_first_name(Contact contacts[], int count, const char *target);
 
+int save_contacts(const Contact contacts[], int count, const char *path);
+
+int load_contacts(Contact contacts[], int capacity, int *count, const char *path);
+
 #endif
